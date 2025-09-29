@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  fra:
+  fes:
     runs-on: windows-latest
 
     steps:
