@@ -1,0 +1,103 @@
+name: fra
+
+on:
+  schedule:
+    - cron: '31 10 * * *'
+  # push:
+  #   branches:
+  #     - master
+  workflow_dispatch:
+
+jobs:
+  fra:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout public repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.8' # Specify the Python version you need
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.17.1' # Specify the Python version you need
+
+    - name: Clone private repo
+      env:
+        GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+      run: |
+        git clone https://x-access-token:${GITHUB_TOKEN}@github.com/iamCristYE/nogifes-fes.git
+        cd nogifes-fes
+
+    - name: Install 7-Zip
+      run: choco install -y 7zip
+  
+    - name: Download FFmpeg
+      run: |
+          # Download the FFmpeg .7z archive
+          curl -L -o ffmpeg-release-essentials.7z https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z
+  
+    - name: Extract FFmpeg
+      run: |
+          # Extract the archive using 7-Zip
+          7z x ffmpeg-release-essentials.7z -o"ffmpeg-extracted"
+  
+    - name: Move FFmpeg binary
+      run: |
+          # Move ffmpeg.exe to the current working directory
+          move ffmpeg-extracted\ffmpeg-*\bin\ffmpeg.exe .\nogifes-fes
+
+    - name: Verify FFmpeg
+      run: |
+        cd nogifes-fes
+        .\ffmpeg.exe -version
+
+    - name: Install Visual C++ Redistributable x64
+      run: |
+        .\tools\vcredist_x64.exe /quiet
+    
+    - name: Install Visual C++ Redistributable x86
+      run: |
+          .\tools\vcredist_x86.exe /quiet   
+
+    - name: Run Python script
+      run: |
+        cd nogifes-fes
+        pip install requests UnityPy typing_extensions
+        python download_home.py
+        python download_event.py
+        python download_login.py
+        python download_focus_high.py
+        python download_focus.py
+        python download_movie_card.py
+        python download_photo.py
+        python download_reward_movie.py
+      env:
+          bot_token: ${{ secrets.bot_token }}
+          AAAA: ${{ secrets.AAAA }}
+          BBBB: ${{ secrets.BBBB }}
+
+    - name: Commit changes
+      shell: pwsh
+      run: |
+            cd nogifes-fes  
+            git status
+            git remote set-url origin https://iamCristYe:$env:PAT@github.com/iamCristYe/nogifes-fes.git
+            git config --global user.email "example@example.com"    
+            git config --global user.name "GitHub Actions"
+            git add index.json
+            git status
+            git remote -v
+            git remote get-url origin
+            git commit -m "Indexes updated."
+            if (-not $?) { Write-Host "No changes to commit" }
+            git push
+      env:
+        PAT: ${{ secrets.PRIVATE_REPO_TOKEN }}
+
+          
+
