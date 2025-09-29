@@ -58,10 +58,12 @@ jobs:
 
     - name: Install Visual C++ Redistributable x64
       run: |
+        cd nogifes-fes
         .\tools\vcredist_x64.exe /quiet
     
     - name: Install Visual C++ Redistributable x86
       run: |
+          cd nogifes-fes
           .\tools\vcredist_x86.exe /quiet   
 
     - name: Run Python script
