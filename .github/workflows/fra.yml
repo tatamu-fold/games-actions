@@ -37,6 +37,7 @@ jobs:
       run: |
         cd nogifra-fra
         pip install requests ffmpeg-python python-json-logger WannaCRI UnityPy
+        pip freeze
         python fra.py
       env:
           bot_token: ${{ secrets.bot_token }}
