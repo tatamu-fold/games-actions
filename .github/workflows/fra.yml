@@ -48,7 +48,7 @@ jobs:
         cd nogifra-fra
         git config user.name "GitHub Actions Bot"
         git config user.email "<>"
-        git add dlc.json
+        git add *.json
         git commit -m "Update dlc.json [$(date -u)]" || echo "No changes to commit"
         git push origin master
 
