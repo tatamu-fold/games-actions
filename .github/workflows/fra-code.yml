@@ -1,0 +1,47 @@
+name: fra-code
+
+on:
+  schedule:
+    - cron: '31 10 * * *'
+  # push:
+  #   branches:
+  #     - master
+  workflow_dispatch:
+
+jobs:
+  fra-code:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout public repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' # Specify the Python version you need
+  
+    - name: Clone private repo
+      env:
+        GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+      run: |
+        git clone https://x-access-token:${GITHUB_TOKEN}@github.com/iamCristYE/nogifra-fra.git
+        cd nogifra-fra
+
+    - name: Download FFmpeg
+      run: |
+          sudo apt update
+          sudo apt install ffmpeg
+
+    - name: Run Python script
+      run: |
+        cd nogifra-fra
+        pip install requests ffmpeg-python python-json-logger WannaCRI UnityPy
+        pip freeze
+        python fra_textures_code.py
+      env:
+          bot_token: ${{ secrets.bot_token }}
+
+
+          
+
