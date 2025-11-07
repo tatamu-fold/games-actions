@@ -1,8 +1,7 @@
 name: fra-code
 
 on:
-  schedule:
-    - cron: '31 10 * * *'
+
   # push:
   #   branches:
   #     - master
