@@ -137,7 +137,7 @@ jobs:
             cd nogifes-fes
             New-Item Test.txt -ItemType File -Value "Test"
             git status
-            git remote set-url origin https://iamCristYe:$env:PAT@github.com/iamCristYe/nogifes-fes.git
+
             git config --global user.email "example@example.com"    
             git config --global user.name "GitHub Actions"
             git add index.json
@@ -147,7 +147,6 @@ jobs:
             git commit -m "Indexes updated."
             if (-not $?) { Write-Host "No changes to commit" }
             git push
-      env:
-        PAT: ${{ secrets.PRIVATE_REPO_TOKEN }}
+
           
 
