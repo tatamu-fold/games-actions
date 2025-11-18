@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  fes:
+  fes-windows:
     runs-on: windows-latest
 
     steps:
@@ -78,6 +78,8 @@ jobs:
         python download_movie_card.py
         python download_photo.py
         python download_reward_movie.py
+        python download_opening_movie.py
+        python download_splash_movie.py
       env:
           bot_token: ${{ secrets.bot_token }}
           AAAA: ${{ secrets.AAAA }}
@@ -101,5 +103,51 @@ jobs:
       env:
         PAT: ${{ secrets.PRIVATE_REPO_TOKEN }}
 
+  fes-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clone private repo
+      env:
+        GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+      run: |
+        git clone https://x-access-token:$env:GITHUB_TOKEN@github.com/iamCristYE/nogifes-fes.git
+        cd nogifes-fes
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11' # Specify the Python version you need
+  
+    - name: Run Python script
+      run: |
+        cd nogifes-fes
+        pip install requests UnityPy typing_extensions
+        python download_campaign_login.py
+        python download_card.py
+        python download_member_girl.py
+        python download_standing.py
+      env:
+          bot_token: ${{ secrets.bot_token }}
+
+          
+    - name: Commit changes
+      shell: pwsh
+      run: |
+            cd nogifes-fes
+            New-Item Test.txt -ItemType File -Value "Test"
+            git status
+            git remote set-url origin https://iamCristYe:$env:PAT@github.com/iamCristYe/nogifes-fes.git
+            git config --global user.email "example@example.com"    
+            git config --global user.name "GitHub Actions"
+            git add index.json
+            git status
+            git remote -v
+            git remote get-url origin
+            git commit -m "Indexes updated."
+            if (-not $?) { Write-Host "No changes to commit" }
+            git push
+      env:
+        PAT: ${{ secrets.PRIVATE_REPO_TOKEN }}
           
 
