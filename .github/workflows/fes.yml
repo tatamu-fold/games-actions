@@ -61,6 +61,7 @@ jobs:
           
 
   fes-windows:
+    needs: fes-linux
     runs-on: windows-latest
 
     steps:
