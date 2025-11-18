@@ -70,13 +70,9 @@ jobs:
       run: |
         cd nogifes-fes
         pip install requests UnityPy typing_extensions
-        python download_home.py
-        python download_event.py
-        python download_login.py
         python download_focus_high.py
         python download_focus.py
         python download_movie_card.py
-        python download_photo.py
         python download_reward_movie.py
         python download_opening_movie.py
         python download_splash_movie.py
@@ -123,7 +119,11 @@ jobs:
       run: |
         cd nogifes-fes
         pip install requests UnityPy typing_extensions
+        python download_photo.py
+        python download_sequential_login.py
         python download_campaign_login.py
+        python download_home_banner.py
+        python download_event_banner.py
         python download_card.py
         python download_member_girl.py
         python download_standing.py
