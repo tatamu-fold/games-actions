@@ -28,15 +28,15 @@ jobs:
     - name: Run Python script
       run: |
         cd nogifes-fes
-        pip install requests UnityPy typing_extensions
-        python download_photo.py
-        python download_sequential_login.py
-        python download_campaign_login.py
-        python download_home_banner.py
-        python download_event_banner.py
-        python download_card.py
-        python download_member_girl.py
-        python download_standing.py
+        time pip install requests UnityPy typing_extensions
+        time python download_photo.py
+        time python download_sequential_login.py
+        time python download_campaign_login.py
+        time python download_home_banner.py
+        time python download_event_banner.py
+        time python download_card.py
+        time python download_member_girl.py
+        time python download_standing.py
       env:
           bot_token: ${{ secrets.bot_token }}
 
