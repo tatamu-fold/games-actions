@@ -1,0 +1,43 @@
+name: koi
+
+on:
+  # schedule:
+  #   - cron: '31 10 * * *'
+  # push:
+  #   branches:
+  #     - master
+  workflow_dispatch:
+
+jobs:
+  koi-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clone private repo
+      env:
+        GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+      run: |
+        git clone https://x-access-token:${GITHUB_TOKEN}@github.com/iamCristYE/nogikoi-koi.git
+        cd nogikoi-koi
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11' # Specify the Python version you need
+  
+    - name: Run Python script
+      run: |
+        cd nogikoi-koi
+        time pip install requests 
+        time python koi.py
+          
+    - name: Commit and push changes
+      run: |
+        cd nogikoi-koi
+        git config user.name "GitHub Actions Bot"
+        git config user.email "<actions@github.com>"
+        git add data.json
+        git commit -m "Update data.json [$(date -u)]" || echo "No changes to commit"
+        git push origin main
+
+          
