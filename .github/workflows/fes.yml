@@ -2,7 +2,7 @@ name: fes
 
 on:
   schedule:
-    - cron: '31 10 * * *'
+    - cron: '31 8 * * *'
   # push:
   #   branches:
   #     - master
