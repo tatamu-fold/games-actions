@@ -2,7 +2,7 @@ name: koi
 
 on:
   schedule:
-    - cron: '31 11,23 * * *'
+    - cron: '31 4 * * *'
   # push:
   #   branches:
   #     - master
@@ -29,7 +29,8 @@ jobs:
       run: |
         cd nogikoi-koi
         time pip install requests 
-        time python koi.py
+        time python koi-5-6.py
+        time python koi-7-8.py
           
     - name: Commit and push changes
       run: |
