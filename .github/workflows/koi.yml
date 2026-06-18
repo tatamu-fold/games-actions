@@ -28,7 +28,7 @@ jobs:
     - name: Run Python script
       run: |
         cd nogikoi-koi
-        time pip install requests easyocr
+        time pip install requests easyocr paddleocr
         time python koi-5-6.py
         time python koi-7-8.py
           
