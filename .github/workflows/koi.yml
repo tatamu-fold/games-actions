@@ -2,7 +2,7 @@ name: koi
 
 on:
   schedule:
-    - cron: '31 4 * * *'
+    - cron: '31 18 * * *'
   # push:
   #   branches:
   #     - master
