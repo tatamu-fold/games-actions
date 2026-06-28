@@ -1,8 +1,8 @@
 name: fra
 
 on:
-  # schedule:
-  #  - cron: '31 6 * * *'
+  schedule:
+    - cron: '31 6 * * *'
   # push:
   #   branches:
   #     - master
