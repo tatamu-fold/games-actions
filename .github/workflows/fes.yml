@@ -3,151 +3,192 @@ name: fes
 on:
   schedule:
     - cron: '31 8 * * *'
-  # push:
-  #   branches:
-  #     - master
   workflow_dispatch:
 
 jobs:
-  fes-linux:
+  # ───────────────────────────── v1 Linux ─────────────────────────────
+  fes-linux-v1:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Clone private repo
-      env:
-        GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
-      run: |
-        git clone https://x-access-token:${GITHUB_TOKEN}@github.com//iamCristYE/nogifes-fes.git
-        cd nogifes-fes
+      - name: Clone private repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+        run: git clone https://x-access-token:${GITHUB_TOKEN}@github.com/iamCristYE/nogifes-fes.git
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11' # Specify the Python version you need
-  
-    - name: Run Python script
-      run: |
-        cd nogifes-fes
-        time pip install requests UnityPy typing_extensions
-        time python download_photo.py
-        time python download_sequential_login.py
-        time python download_campaign_login.py
-        time python download_home_banner.py
-        time python download_event_banner.py
-        time python download_card.py
-        time python download_member_girl.py
-        time python download_standing.py
-      env:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run scripts
+        working-directory: nogifes-fes
+        run: |
+          time pip install requests UnityPy typing_extensions
+          time python download_photo.py
+          time python download_sequential_login.py
+          time python download_campaign_login.py
+          time python download_home_banner.py
+          time python download_event_banner.py
+          time python download_card.py
+          time python download_member_girl.py
+          time python download_standing.py
+        env:
           bot_token: ${{ secrets.bot_token }}
+          HOST_FES: v1static.nogifes.jp
 
-          
-    - name: Commit changes
-      shell: pwsh
-      run: |
-            cd nogifes-fes
-            New-Item Test.txt -ItemType File -Value "Test"
-            git status
+      - name: Commit
+        working-directory: nogifes-fes
+        run: |
+          git config --global user.email "example@example.com"
+          git config --global user.name "GitHub Actions"
+          git add index.json
+          git commit -m "Indexes updated (v1 Linux)." || true
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
 
-            git config --global user.email "example@example.com"    
-            git config --global user.name "GitHub Actions"
-            git add index.json
-            git status
-            git remote -v
-            git remote get-url origin
-            git commit -m "Indexes updated."
-            if (-not $?) { Write-Host "No changes to commit" }
-            git push
-
-          
-
-  fes-windows:
-    needs: fes-linux
+  # ───────────────────────────── v1 Windows ─────────────────────────────
+  fes-windows-v1:
+    needs: fes-linux-v1
     runs-on: windows-latest
-
     steps:
-    - name: Checkout public repository
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.17.1'
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.8' # Specify the Python version you need
+      - name: Clone private repo
+        run: git clone https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/iamCristYE/nogifes-fes.git
 
-    - name: Set up Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.17.1' # Specify the Python version you need
-
-    - name: Clone private repo
-      env:
-        GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
-      run: |
-        git clone https://x-access-token:$env:GITHUB_TOKEN@github.com/iamCristYE/nogifes-fes.git
-        cd nogifes-fes
-
-    - name: Install 7-Zip
-      run: choco install -y 7zip
-  
-    - name: Download FFmpeg
-      run: |
-          # Download the FFmpeg .7z archive
+      - name: Install tools
+        run: |
+          choco install -y 7zip
           curl -L -o ffmpeg-release-essentials.7z https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z
-  
-    - name: Extract FFmpeg
-      run: |
-          # Extract the archive using 7-Zip
           7z x ffmpeg-release-essentials.7z -o"ffmpeg-extracted"
-  
-    - name: Move FFmpeg binary
-      run: |
-          # Move ffmpeg.exe to the current working directory
           move ffmpeg-extracted\ffmpeg-*\bin\ffmpeg.exe .\nogifes-fes
-
-    - name: Verify FFmpeg
-      run: |
-        cd nogifes-fes
-        .\ffmpeg.exe -version
-
-    - name: Install Visual C++ Redistributable x64
-      run: |
-        cd nogifes-fes
-        .\tools\vcredist_x64.exe /quiet
-    
-    - name: Install Visual C++ Redistributable x86
-      run: |
           cd nogifes-fes
-          .\tools\vcredist_x86.exe /quiet   
+          .\tools\vcredist_x64.exe /quiet
+          .\tools\vcredist_x86.exe /quiet
 
-    - name: Run Python script
-      run: |
-        cd nogifes-fes
-        pip install requests UnityPy typing_extensions
-        python download_focus_high.py
-        python download_focus.py
-        python download_movie_card.py
-        python download_reward_movie.py
-        python download_opening_movie.py
-        python download_splash_movie.py
-      env:
+      - name: Run scripts
+        working-directory: nogifes-fes
+        run: |
+          pip install requests UnityPy typing_extensions
+          python download_focus_high.py
+          python download_focus.py
+          python download_movie_card.py
+          python download_reward_movie.py
+          python download_opening_movie.py
+          python download_splash_movie.py
+        env:
           bot_token: ${{ secrets.bot_token }}
           AAAA: ${{ secrets.AAAA }}
           BBBB: ${{ secrets.BBBB }}
+          HOST_FES: v1static.nogifes.jp
 
-    - name: Commit changes
-      shell: pwsh
-      run: |
-            cd nogifes-fes  
-            git status
-            git remote set-url origin https://iamCristYe:$env:PAT@github.com/iamCristYe/nogifes-fes.git
-            git config --global user.email "example@example.com"    
-            git config --global user.name "GitHub Actions"
-            git add index.json
-            git status
-            git remote -v
-            git remote get-url origin
-            git commit -m "Indexes updated."
-            if (-not $?) { Write-Host "No changes to commit" }
-            git push
-      env:
-        PAT: ${{ secrets.PRIVATE_REPO_TOKEN }}
+      - name: Commit
+        working-directory: nogifes-fes
+        shell: pwsh
+        run: |
+          git config --global user.email "example@example.com"
+          git config --global user.name "GitHub Actions"
+          git remote set-url origin https://iamCristYe:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/iamCristYe/nogifes-fes.git
+          git add index.json
+          git commit -m "Indexes updated (v1 Windows)." || true
+          git push
 
+  # ───────────────────────────── v2 Linux ─────────────────────────────
+  fes-linux-v2:
+    needs: fes-windows-v1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone private repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+        run: git clone https://x-access-token:${GITHUB_TOKEN}@github.com/iamCristYE/nogifes-fes.git
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run scripts
+        working-directory: nogifes-fes
+        run: |
+          time pip install requests UnityPy typing_extensions
+          time python download_photo.py
+          time python download_sequential_login.py
+          time python download_campaign_login.py
+          time python download_home_banner.py
+          time python download_event_banner.py
+          time python download_card.py
+          time python download_member_girl.py
+          time python download_standing.py
+        env:
+          bot_token: ${{ secrets.bot_token }}
+          HOST_FES: v2static.nogifes.jp
+
+      - name: Commit
+        working-directory: nogifes-fes
+        run: |
+          git config --global user.email "example@example.com"
+          git config --global user.name "GitHub Actions"
+          git add index.json
+          git commit -m "Indexes updated (v2 Linux)." || true
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+
+  # ───────────────────────────── v2 Windows ─────────────────────────────
+  fes-windows-v2:
+    needs: fes-linux-v2
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.17.1'
+
+      - name: Clone private repo
+        run: git clone https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/iamCristYE/nogifes-fes.git
+
+      - name: Install tools
+        run: |
+          choco install -y 7zip
+          curl -L -o ffmpeg-release-essentials.7z https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z
+          7z x ffmpeg-release-essentials.7z -o"ffmpeg-extracted"
+          move ffmpeg-extracted\ffmpeg-*\bin\ffmpeg.exe .\nogifes-fes
+          cd nogifes-fes
+          .\tools\vcredist_x64.exe /quiet
+          .\tools\vcredist_x86.exe /quiet
+
+      - name: Run scripts
+        working-directory: nogifes-fes
+        run: |
+          pip install requests UnityPy typing_extensions
+          python download_focus_high.py
+          python download_focus.py
+          python download_movie_card.py
+          python download_reward_movie.py
+          python download_opening_movie.py
+          python download_splash_movie.py
+        env:
+          bot_token: ${{ secrets.bot_token }}
+          AAAA: ${{ secrets.AAAA }}
+          BBBB: ${{ secrets.BBBB }}
+          HOST_FES: v2static.nogifes.jp
+
+      - name: Commit
+        working-directory: nogifes-fes
+        shell: pwsh
+        run: |
+          git config --global user.email "example@example.com"
+          git config --global user.name "GitHub Actions"
+          git remote set-url origin https://iamCristYe:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/iamCristYe/nogifes-fes.git
+          git add index.json
+          git commit -m "Indexes updated (v2 Windows)." || true
+          git push
