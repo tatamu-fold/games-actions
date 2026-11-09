@@ -1,0 +1,39 @@
+name: fra_daily
+
+on:
+  schedule:
+    - cron: '31 22 * * *'
+  # push:
+  #   branches:
+  #     - master
+  workflow_dispatch:
+
+jobs:
+  fra_daily:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout public repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' # Specify the Python version you need
+  
+    - name: Clone private repo
+      env:
+        GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+      run: |
+        git clone https://x-access-token:${GITHUB_TOKEN}@github.com/iamCristYE/nogifra-fra.git
+        cd nogifra-fra
+
+    - name: Run Python script
+      run: |
+        cd nogifra-fra
+        pip install requests 
+        pip freeze
+        python fra_daily.py
+
+          
+
