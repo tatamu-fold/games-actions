@@ -2,7 +2,7 @@ name: fra_daily
 
 on:
   schedule:
-    - cron: '0 20 * * *'
+    - cron: '0 18 * * *'
   # push:
   #   branches:
   #     - master
