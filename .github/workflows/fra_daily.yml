@@ -26,14 +26,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
       run: |
         git clone https://x-access-token:${GITHUB_TOKEN}@github.com/iamCristYE/nogifra-fra.git
-        cd nogifra-fra
+        pip install requests
 
     - name: Run Python script
       run: |
         cd nogifra-fra
-        pip install requests 
-        pip freeze
         python fra_daily.py
-
-          
-
